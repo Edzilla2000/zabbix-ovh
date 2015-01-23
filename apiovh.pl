@@ -25,9 +25,9 @@ GetOptions ('user=s' => \$ouser,
 'query=s' => \$query);
 
 #debug
-open(my $fh, '>>', '/tmp/report.txt');
-print $fh "executed\n";
-close $fh;
+#open(my $fh, '>>', '/tmp/report.txt');
+#print $fh "executed\n";
+#close $fh;
 #debug
 
 my $soap = SOAP::Lite
@@ -71,34 +71,15 @@ elsif ($query eq "domainInfo")
         ;
     my $listings = $soap->result;
     foreach my $listing ($listings) {
-	#print Dumper $listing;
-	#$listing->{expiration};
 	my $today = DateTime->now( time_zone => 'Europe/Brussels' );
 	my $parser = DateTime::Format::Strptime->new(
 	    pattern => '%Y-%m-%d',
 	    on_error => 'croak',
 	    );
 	my $expiration = $parser->parse_datetime($listing->{expiration});
-
-#	print Dumper $expiration->subtract_datetime($today);
+	
 	my $d = DateTime::Format::Duration->new(
                 pattern => "%j\n");
 	print $d->format_duration($expiration->subtract_datetime($today));
     }
 }
-#login
-#my $result = $soap->call( 'login' => ($ouser, $opassword, 'fr', 0) );
-#print "login successfull\n";
-#my $session = $result->result();
-
-#query
-#my $result = $soap->call( $query => ($session) );
-#print "domainCheck successfull\n";
-#my @SoapReturn = $result->result();
-#print Dumper $SoapReturn['MyArrayOfStringType']; # your code here ...
-#print @SoapReturn;
-
-#logout
-#$soap->call( 'logout' => ( $session ) );
-#print "logout successfull\n";
-
